@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">    
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <link rel="shortcut icon" href="img/logo.png" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="css/icon.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="css/index.css">
+  </head>
+  <body class="bg-light">
+    <nav class="navbar fixed-top bg-primary navbar-dark">
+      <div class="container-fluid">        
+        <a class="navbar-brand" data-bs-toggle="offcanvas" href="#offcanvas" role="button" aria-controls="offcanvas"><span class="navbar-toggler-icon"></span></a>
+        <span class="navbar-text">
+          RFID Demo
+        </span>
+      </div>
+    </nav>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+      <div class="offcanvas-header border-bottom bg-primary">
+        <h5 class="offcanvas-title" id="offcanvasLabel">Menu</h5>
+        <button type="button" class="btn-close text-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body px-0">
+        <ul class="list-unstyled ps-0">
+          <li class="border-top my-3"></li>
+          <li class="mb-1">
+            <button
+              class="btn btn-toggle align-items-center rounded collapsed"
+              data-bs-toggle="collapse"
+              data-bs-target="#account-collapse"
+              aria-expanded="false"
+              >
+              Account
+            </button>
+            <div class="collapse" id="account-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <!--li><a href="#" class="rounded" onclick="logOut()">Sign out</a></li-->
+                <li><a href="setting.html" class="rounded" >Setting</a></li>
+              </ul>
+            </div>
+          </li>
+          
+          <li class="mb-1">
+            <button
+              class="btn btn-toggle align-items-center rounded collapsed"
+              data-bs-toggle="collapse"
+              data-bs-target="#trans-collapse"
+              aria-expanded="false"
+              >
+              Transaction
+            </button>
+            <div class="collapse" id="trans-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li><a href="#" class="rounded" >Link 1</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="app">
+      <div class="container-fluid">
+        <div class="row d-flex">
+          <div class="col-12">
+            <!-- Filter -->
+            <div class="row mb-2" id="selection">
+              
+            </div>
+            <!-- Main Content -->
+            <div class="container mb-3" id="main-content">
+              <div class="row">
+                <div class="col-12">
+                  <label for="rfid_data" class="form-label">RFID Scanned</label>
+                  <textarea class="form-control" id="rfid_data" rows="8"></textarea>
+                </div>
+                <div class="col-12">
+                  <!--div class="container-fluid">
+                    <div class="row">
+                      <div class="col-6">
+                        <div class="d-grid mt-2">
+                          <button type="button" class="btn btn-primary" id="btn-p1">Proses 1</button>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="d-grid mt-2">
+                          <button type="button" class="btn btn-primary" id="btn-p2">Proses 2</button>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="d-grid mt-2">
+                          <button type="button" class="btn btn-primary" id="btn-p3">Proses 3</button>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="d-grid mt-2">
+                          <button type="button" class="btn btn-primary" id="btn-p4">Proses 4</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div-->                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid mb-3">
+        &nbsp;
+      </div>
+    </div>
+    <div class="fixed-bottom bg-light border-top">
+      <div class="container py-2">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text" id="basic-addon1">Device ID</span>
+          <input type="text" class="form-control text-center" aria-describedby="basic-addon1" id="device_id">
+        </div>
+      </div>      
+    </div>
+    
+    <script src="cordova.js"></script>
+    <script src="js/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script src="js/pulltorefresh.js" type="text/javascript"></script>
+    <script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="js/index.js"></script>
+    <script>
+      document.addEventListener("backbutton", backAction, false);
+      document.addEventListener("deviceready", pageReady, false);
+      PullToRefresh.init({
+        mainElement: 'body',
+        distThreshold: 120,
+        distMax: 140,
+        onRefresh: function(){ onPageRefresh(); }
+      });  
+            
+      function pageReady() {
+        var mode = "BARCODE";
+        zebraRfid.connect(mode, 300, successCallback, errorCallback);
+      }
+      
+      function successCallback(result) {
+        var data = "";
+        var rfid = [];
+        if(result.data) {
+          data = result.data.replace(/[^a-z0-9\s]/gi, '');
+          rfid = data.split(" ");
+          $("#rfid_data").val(rfid.join("\n"));
+        }
+      }
+      
+      function errorCallback(error) {
+        console.log(error);
+        alert(error.toString());
+      }
+      
+      function onPageRefresh() {
+        //refresh all content
+      }
+      function goToPage(url) {
+        window.open(url);
+      }
+      
+      /*$("#btn-p1").click(function() {
+        uploadData("1");
+      });
+      $("#btn-p2").click(function() {
+        uploadData("2");
+      });
+      $("#btn-p3").click(function() {
+        uploadData("3");
+      });
+      $("#btn-p4").click(function() {
+        uploadData("4");
+      });*/
+      
+      /*function uploadData(process_id) {
+        var data_rfid = $("#rfid_data").val();
+        if(server_url.length > 0) { 
+          if(data_rfid.length > 0) {
+            SpinnerDialog.show("Please Wait", "Loading Data", true);
+            $.ajax({
+              type: "POST",
+              url: server_url+"?action=api_upload_rfid",
+              data: {rfid_data:data_rfid,process_id:process_id,device_id:storage.getItem("device_id")},
+              success: function(data){
+                SpinnerDialog.hide();
+                var isJson = true;
+                try{
+                  var result = $.parseJSON(data);
+                } catch(err) {
+                  isJson = false;
+                  alert(err);
+                }
+                if(isJson === true) {
+                  //to do here
+                  if(result.status === true) {
+                    alert(result.message);
+                    $("#rfid_data").val("");
+                  } else {
+                    alert(result.message);
+                  }                
+                }
+              },
+              error: function() {
+                SpinnerDialog.hide();
+                alert("Connection Failed to Server ["+server_url+"]");
+              }
+            });
+          } else {
+            alert("Belum scan RFID");
+          }
+        } else {
+          alert("Please check setting [Server Address][NULL]");
+        }
+          
+      }*/
+    </script>
+  </body>
+</html>
